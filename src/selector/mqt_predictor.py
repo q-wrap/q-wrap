@@ -9,7 +9,7 @@ import mqt.bench
 from qiskit import QuantumCircuit
 import qiskit.qasm3
 
-from selectors import Selector
+from selector import Selector
 import util
 
 

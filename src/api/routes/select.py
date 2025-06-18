@@ -3,7 +3,7 @@ from http import HTTPStatus
 from flask import abort, request
 from flask.views import MethodView
 
-from selectors import MqtPredictor
+from selector import MqtPredictor
 
 
 class SelectView(MethodView):
