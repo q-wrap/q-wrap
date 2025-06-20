@@ -1,3 +1,6 @@
+from qiskit import QuantumCircuit
+
+
 class Selector:
-    def select_device(self, openqasm_circuit: str, openqasm_version: int) -> str:
+    def select_device(self, circuit: QuantumCircuit) -> str:
         raise NotImplementedError
