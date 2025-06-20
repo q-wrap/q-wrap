@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from util import get_openqasm_version
+from src.util import get_openqasm_version
 
 
 class TestOpenQasmVersion(TestCase):
