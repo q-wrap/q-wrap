@@ -1,1 +1,1 @@
-from .openqasm import get_openqasm_version
+from .openqasm import parse_openqasm_version_or_default
