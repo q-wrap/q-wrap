@@ -23,7 +23,7 @@ def parse_openqasm_version_or_default(openqasm_circuit: str) -> int:
 def load_openqasm_circuit(openqasm_circuit: str, openqasm_version: int) -> QuantumCircuit:
     match openqasm_version:
         case 2:
-            loaded_circuit = qasm2.loads(openqasm_circuit)
+            loaded_circuit = qasm2.loads(openqasm_circuit, custom_instructions=qasm2.LEGACY_CUSTOM_INSTRUCTIONS)
         case 3:
             loaded_circuit = qasm3.loads(openqasm_circuit)
         case _:
