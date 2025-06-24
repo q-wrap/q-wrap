@@ -6,7 +6,10 @@ from simulator import Simulator
 
 
 class IbmSimulator(Simulator):
-    def simulate_circuit(self, circuit: QuantumCircuit):
+    def simulate_circuit(self, circuit: QuantumCircuit, noisy_backend: str = None):
+        if noisy_backend is not None:
+            return NotImplementedError
+
         aer_simulator = AerSimulator()
         transpiled_circuit = transpile(circuit, aer_simulator)
         result = aer_simulator.run(transpiled_circuit).result()

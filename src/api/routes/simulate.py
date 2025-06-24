@@ -25,4 +25,13 @@ class SimulateView(MethodView):
             abort(HTTPStatus.BAD_REQUEST,
                   f"Parameter 'vendor' must be one of: {", ".join(Simulator.get_all_vendor_names())}")
 
-        return simulator.simulate_circuit(loaded_circuit)
+        # additional optional parameter
+        if "noisy_backend" in data:
+            noisy_backend = data["noisy_backend"]
+        else:
+            noisy_backend = None
+
+        try:
+            return simulator.simulate_circuit(loaded_circuit, noisy_backend)
+        except PermissionError:
+            abort(HTTPStatus.FORBIDDEN, "API key for this vendor required")

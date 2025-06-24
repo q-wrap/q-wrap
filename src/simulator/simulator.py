@@ -13,13 +13,17 @@ class Simulator:
                 from simulator.ibm import IbmSimulator
                 return IbmSimulator()
             case "ionq":
-                raise NotImplementedError
+                from simulator.ionq import IonqSimulator
+                return IonqSimulator()
             case "iqm":
-                raise NotImplementedError
+                from simulator.iqm import IqmSimulator
+                return IqmSimulator()
             case "quantinuum":
-                raise NotImplementedError
+                from simulator.quantinuum import QuantinuumSimulator
+                return QuantinuumSimulator()
             case "rigetti":
-                raise NotImplementedError
+                from simulator.rigetti import RigettiSimulator
+                return RigettiSimulator()
             case _:
                 raise ValueError(f"Unknown vendor: {vendor}")
 
@@ -27,5 +31,5 @@ class Simulator:
     def get_all_vendor_names(cls):
         return ["ibm", "ionq", "iqm", "quantinuum", "rigetti"]
 
-    def simulate_circuit(self, circuit: QuantumCircuit):
+    def simulate_circuit(self, circuit: QuantumCircuit, noisy_backend: str = None):
         return NotImplementedError
