@@ -8,17 +8,17 @@ class IqmSimulator(Simulator):
     backend_apollo = None
 
     @classmethod
-    def _set_backend(cls):
+    def _get_backend_apollo(cls) -> IQMFakeApollo:
         if cls.backend_apollo is None:
             cls.backend_apollo = IQMFakeApollo()
+        return cls.backend_apollo
 
     def simulate_circuit(self, circuit: QuantumCircuit, noisy_backend: str = None):
         match noisy_backend:
             case None:
                 raise ValueError("IQM does not support noise-free simulation.")
             case "apollo":
-                self._set_backend()
-                backend = self.backend_apollo
+                backend = self._get_backend_apollo()
                 transpiled_circuit = transpile(circuit, backend)
 
                 if transpiled_circuit.num_qubits > 20:

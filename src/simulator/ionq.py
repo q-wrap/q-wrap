@@ -1,47 +1,80 @@
 import json
 
-from qiskit import QuantumCircuit
+from qiskit import QuantumCircuit, transpile
 from qiskit_ionq import IonQProvider
+from qiskit_ionq.ionq_backend import IonQSimulatorBackend
 
 from simulator import Simulator
 
 
 class IonqSimulator(Simulator):
-    backend = None
+    provider = None
+    backend_simulator = None
+    backend_aria = None
+    backend_harmony = None
 
     @classmethod
-    def _set_backend(cls):
-        if cls.backend is None:
+    def _get_provider(cls):
+        if cls.provider is None:
             try:
                 with open("../data/secrets/tokens.json", "r") as file:
                     json_data = json.load(file)
                     if "ionq" in json_data:
-                        cls.TOKEN = json_data["ionq"]
+                        token = json_data["ionq"]
                     else:
                         raise PermissionError("Missing API key for IonQ.")
             except FileNotFoundError:
                 raise PermissionError("Missing file with API keys.")
 
-            cls.backend = IonQProvider(cls.TOKEN).get_backend("ionq_simulator")
+            cls.provider = IonQProvider(token)
+
+        return cls.provider
+
+    @classmethod
+    def _get_backend_simulator(cls) -> IonQSimulatorBackend:
+        if cls.backend_simulator is None:
+            cls.backend_simulator = cls._get_provider().get_backend("ionq_simulator")
+        return cls.backend_simulator
+
+    @classmethod
+    def _get_backend_aria(cls) -> IonQSimulatorBackend:
+        if cls.backend_aria is None:
+            cls.backend_aria = cls._get_provider().get_backend("ionq_simulator")
+            cls.backend_aria.set_options(noise_model="aria-1")
+        return cls.backend_aria
+
+    @classmethod
+    def _get_backend_harmony(cls) -> IonQSimulatorBackend:
+        if cls.backend_harmony is None:
+            cls.backend_harmony = cls._get_provider().get_backend("ionq_simulator")
+            cls.backend_harmony.set_options(noise_model="harmony")
+        return cls.backend_harmony
 
     @classmethod
     def simulate_circuit(cls, circuit: QuantumCircuit, noisy_backend: str = None):
         match noisy_backend:
             case None:
-                if circuit.num_qubits > 29:
+                backend = cls._get_backend_simulator()
+                transpiled_circuit = transpile(circuit, backend)
+
+                if transpiled_circuit.num_qubits > 29:
                     raise ValueError("Ideal simulation with IonQ supports only up to 29 qubits.")
-                noisy_backend = "ideal"
             case "aria-1":
-                if circuit.num_qubits > 25:
-                    raise ValueError("IonQ Aria-1 backend supports only up to 25 qubits.")
+                backend = cls._get_backend_aria()
+                transpiled_circuit = transpile(circuit, backend)
+
+                if transpiled_circuit.num_qubits > 25:
+                    raise ValueError("IonQ Aria 1 backend supports only up to 25 qubits.")
             case "harmony":
-                if circuit.num_qubits > 11:
+                backend = cls._get_backend_harmony()
+                transpiled_circuit = transpile(circuit, backend)
+
+                if transpiled_circuit.num_qubits > 11:
                     raise ValueError("IonQ Harmony backend supports only up to 11 qubits.")
             case _:
                 raise ValueError(f"Unknown IonQ backend: {noisy_backend}")
 
-        cls._set_backend()
-        job = cls.backend.run(circuit, shots=1000, noise_model=noisy_backend)
+        job = backend.run(transpiled_circuit, shots=1000)
         counts = job.get_counts()
 
         return {key: int(value) for key, value in counts.items()}  # convert numpy int to int for JSON serialization
