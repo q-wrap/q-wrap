@@ -3,6 +3,7 @@ from http import HTTPStatus
 from flask import abort, request
 
 import util
+from api.common import error_handling
 
 
 def get_json():
@@ -28,12 +29,14 @@ def get_circuit(data):
     else:
         try:
             openqasm_version = util.parse_openqasm_version_or_default(openqasm_circuit)
-        except ValueError:
+        except ValueError as error:
+            error_handling.print_error(error)
             abort(HTTPStatus.BAD_REQUEST, "Invalid version specification in OpenQASM circuit")
     if openqasm_version == 3:
         print("Warning: OpenQASM 3 is not fully supported yet.")
 
     try:
         return util.load_openqasm_circuit(openqasm_circuit, openqasm_version)
-    except ValueError:
+    except ValueError as error:
+        error_handling.print_error(error)
         abort(HTTPStatus.BAD_REQUEST, "Invalid OpenQASM circuit")

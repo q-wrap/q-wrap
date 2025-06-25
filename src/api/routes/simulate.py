@@ -3,7 +3,7 @@ from http import HTTPStatus
 from flask import abort
 from flask.views import MethodView
 
-from api.common import validation
+from api.common import validation, error_handling
 from simulator import Simulator
 
 
@@ -21,7 +21,8 @@ class SimulateView(MethodView):
         vendor = data["vendor"]
         try:
             simulator = Simulator.get_simulator(vendor)
-        except ValueError:
+        except ValueError as error:
+            error_handling.print_error(error)
             abort(HTTPStatus.BAD_REQUEST,
                   f"Parameter 'vendor' must be one of: {", ".join(Simulator.get_all_vendor_names())}")
 
@@ -33,5 +34,6 @@ class SimulateView(MethodView):
 
         try:
             return simulator.simulate_circuit(loaded_circuit, noisy_backend)
-        except PermissionError:
+        except PermissionError as error:
+            error_handling.print_error(error)
             abort(HTTPStatus.FORBIDDEN, "API key for this vendor required")
