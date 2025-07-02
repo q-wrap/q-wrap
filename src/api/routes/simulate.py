@@ -12,6 +12,57 @@ class SimulateView(MethodView):
         error_handling.post_only()
 
     def post(self):
+        """
+        Quantum Circuit Simulation
+        ---
+        description:
+          Simulate a given OpenQASM circuit without noise or with the noise model of a specified quantum computer.
+        tags:
+          - simulation
+        parameters:
+          - name: openqasm_circuit
+            in: body
+            type: string
+            required: true
+            description: OpenQASM circuit to be evaluated
+          - name: openqasm_version
+            in: body
+            type: integer
+            enum: [2, 3]
+            required: false
+            description: version of OpenQASM used in the circuit (default is 2)
+          - name: vendor
+            in: body
+            type: string
+            required: true
+            description: Vendor of the quantum computer to be simulated (ibm, ionq, iqm, quantinuum, rigetti)
+          - name: noisy_backend
+            in: body
+            type: string
+            required: false
+            enum: [montreal, washington, aria-1, harmony, apollo, h2, aspen-m3]
+            description:
+              Name of the quantum computer whose noise model is used for simulation (montreal, washington, aria-1,
+              harmony, apollo, h2, aspen-m3). This value must fit the vendor.
+
+              If omitted, noise-free simulation is performed.
+        responses:
+          200:
+            description: Successfully simulated quantum circuit
+            schema:
+              type: object
+              properties:
+                result:
+                  type: string
+                  description: Result of the simulation, e.g., measurement outcomes
+          400:
+            description: Bad request, e.g., missing required parameters or invalid OpenQASM circuit
+          403:
+            description: Forbidden, e.g., if the API key for the specified vendor is required but not provided
+          415:
+            description: Unsupported media type, e.g., if the request is not in JSON format
+          
+        """
         data = validation.get_json()
         loaded_circuit = validation.get_circuit(data)
 
