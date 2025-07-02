@@ -1,15 +1,14 @@
 from http import HTTPStatus
 
-from flask import abort
 from flask.views import MethodView
 
-from api.common import validation
+from api.common import validation, error_handling
 from selector import MqtPredictor
 
 
 class SelectView(MethodView):
     def get(self):
-        abort(HTTPStatus.NOT_IMPLEMENTED)
+        error_handling.post_only()
 
     def post(self):
         data = validation.get_json()

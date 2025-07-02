@@ -9,7 +9,7 @@ from simulator import Simulator
 
 class SimulateView(MethodView):
     def get(self):
-        abort(HTTPStatus.NOT_IMPLEMENTED)
+        error_handling.post_only()
 
     def post(self):
         data = validation.get_json()
