@@ -66,6 +66,7 @@ class IonqSimulator(Simulator):
                 if transpiled_circuit.num_qubits > 25:
                     raise ValueError("IonQ Aria 1 backend supports only up to 25 qubits.")
             case "harmony":
+                print("Warning: Simulation on IonQ Harmony currently takes very long.")
                 backend = cls._get_backend_harmony()
                 transpiled_circuit = transpile(circuit, backend)
 
