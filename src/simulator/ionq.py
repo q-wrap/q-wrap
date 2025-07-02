@@ -74,7 +74,7 @@ class IonqSimulator(Simulator):
             case _:
                 raise ValueError(f"Unknown IonQ backend: {noisy_backend}")
 
-        job = backend.run(transpiled_circuit, shots=1000)
-        counts = job.get_counts()
+        job_result = backend.run(transpiled_circuit, shots=1000).result()
+        counts = job_result.get_counts()
 
         return {key: int(value) for key, value in counts.items()}  # convert numpy int to int for JSON serialization

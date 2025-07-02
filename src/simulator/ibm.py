@@ -1,7 +1,6 @@
 import json
 
 from qiskit import QuantumCircuit, transpile
-from qiskit.circuit import Measure
 from qiskit_aer import AerSimulator
 from qiskit_ibm_runtime import QiskitRuntimeService
 from qiskit_ibm_runtime.fake_provider import FakeMontrealV2, FakeWashingtonV2
@@ -71,7 +70,4 @@ class IbmSimulator(Simulator):
 
         job_result = backend.run(transpiled_circuit, shots=1000).result()
 
-        if transpiled_circuit.count_ops().get(Measure().name, 0) > 0:  # circuit with measurements
-            return job_result.get_counts(transpiled_circuit)
-        else:  # circuit without measurements
-            return job_result.get_statevector(transpiled_circuit)
+        return job_result.get_counts()

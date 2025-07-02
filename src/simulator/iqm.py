@@ -26,5 +26,6 @@ class IqmSimulator(Simulator):
             case _:
                 raise ValueError(f"Unknown backend: {noisy_backend}")
 
-        job = backend.run(transpiled_circuit, shots=1000)
-        return job.result().get_counts()
+        job_result = backend.run(transpiled_circuit, shots=1000).result()
+
+        return job_result.get_counts()
