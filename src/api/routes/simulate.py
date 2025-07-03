@@ -15,10 +15,10 @@ class SimulateView(MethodView):
         """
         Quantum Circuit Simulation
         ---
-        description:
-          Simulate a given OpenQASM circuit without noise or with the noise model of a specified quantum computer.
+        description: |
+          Simulate a given OpenQASM circuit with the noise model of a specified quantum computer or without noise.
         tags:
-          - simulation
+          - core
         parameters:
           - name: openqasm_circuit
             in: body
@@ -30,7 +30,10 @@ class SimulateView(MethodView):
             type: integer
             enum: [2, 3]
             required: false
-            description: version of OpenQASM used in the circuit (default is 2)
+            description: |
+              Version of OpenQASM used in the circuit (2 or 3, default is 2).
+
+              Warning: OpenQASM 3 is not fully supported yet.
           - name: vendor
             in: body
             type: string
@@ -41,26 +44,33 @@ class SimulateView(MethodView):
             type: string
             required: false
             enum: [montreal, washington, aria-1, harmony, apollo, h2, aspen-m3]
-            description:
+            description: |
               Name of the quantum computer whose noise model is used for simulation (montreal, washington, aria-1,
               harmony, apollo, h2, aspen-m3). This value must fit the vendor.
 
               If omitted, noise-free simulation is performed.
+
+              Warning: Simulation on IonQ Harmony currently takes very long.
         responses:
           200:
             description: Successfully simulated quantum circuit
             schema:
               type: object
               properties:
-                result:
-                  type: string
-                  description: Result of the simulation, e.g., measurement outcomes
+                counts:
+                  description: Measurement count of each bitstring
+                  type: object
+                  additionalProperties:
+                    type: integer
           400:
-            description: Bad request, e.g., missing required parameters or invalid OpenQASM circuit
+            description: |
+              Bad request: Missing required parameters or invalid parameters, especially invalid OpenQASM circuit
           403:
-            description: Forbidden, e.g., if the API key for the specified vendor is required but not provided
+            description: |
+              Forbidden: API key for the specified vendor is required but not provided
           415:
-            description: Unsupported media type, e.g., if the request is not in JSON format
+            description: |
+              Unsupported media type: Request is not in JSON format
           
         """
         data = validation.get_json()
@@ -84,7 +94,9 @@ class SimulateView(MethodView):
             noisy_backend = None
 
         try:
-            return simulator.simulate_circuit(loaded_circuit, noisy_backend)
+            return {
+                "counts": simulator.simulate_circuit(loaded_circuit, noisy_backend),
+            }, HTTPStatus.OK
         except PermissionError as error:
             error_handling.print_error(error)
             abort(HTTPStatus.FORBIDDEN, "API key for this vendor required")

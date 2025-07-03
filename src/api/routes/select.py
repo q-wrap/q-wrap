@@ -14,10 +14,10 @@ class SelectView(MethodView):
         """
         Automated Quantum Backend Selection
         ---
-        description:
+        description: |
           Select the most suitable quantum computer for a given OpenQASM circuit.
         tags:
-          - selection
+          - core
         parameters:
           - name: openqasm_circuit
             in: body
@@ -29,7 +29,10 @@ class SelectView(MethodView):
             type: integer
             enum: [2, 3]
             required: false
-            description: version of OpenQASM used in the circuit (default is 2)
+            description: |
+              Version of OpenQASM used in the circuit (2 or 3, default is 2).
+
+              Warning: OpenQASM 3 is not fully supported yet.
         responses:
           200:
             description: Successfully selected quantum computer
@@ -43,9 +46,11 @@ class SelectView(MethodView):
                   type: integer
                   description: Number of qubits in the selected quantum computer
           400:
-            description: Bad request, e.g., missing required parameters or invalid OpenQASM circuit
+            description: |
+              Bad request: Missing required parameters or invalid parameters, especially invalid OpenQASM circuit
           415:
-            description: Unsupported media type, e.g., if the request is not in JSON format
+            description: |
+              Unsupported media type: Request is not in JSON format
         """
         data = validation.get_json()
         loaded_circuit = validation.get_circuit(data)
