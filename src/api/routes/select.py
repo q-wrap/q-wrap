@@ -10,7 +10,7 @@ class SelectView(MethodView):
     def get(self):
         error_handling.post_only()
 
-    def post(self):
+    def post(self) -> tuple[dict, int]:
         """
         Automated Quantum Backend Selection
         ---

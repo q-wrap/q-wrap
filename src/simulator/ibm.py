@@ -48,7 +48,7 @@ class IbmSimulator(Simulator):
         cls._get_backend_montreal().refresh(service)
         cls._get_backend_washington().refresh(service)
 
-    def simulate_circuit(self, circuit: QuantumCircuit, noisy_backend: str = None):
+    def simulate_circuit(self, circuit: QuantumCircuit, noisy_backend: str = None) -> dict[str, int]:
         match noisy_backend:
             case None:
                 backend = self._get_backend_simulator()

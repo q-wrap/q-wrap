@@ -14,7 +14,7 @@ class IonqSimulator(Simulator):
     backend_harmony = None
 
     @classmethod
-    def _get_provider(cls):
+    def _get_provider(cls) -> IonQProvider:
         if cls.provider is None:
             try:
                 with open("../data/secrets/tokens.json", "r") as file:
@@ -51,7 +51,7 @@ class IonqSimulator(Simulator):
         return cls.backend_harmony
 
     @classmethod
-    def simulate_circuit(cls, circuit: QuantumCircuit, noisy_backend: str = None):
+    def simulate_circuit(cls, circuit: QuantumCircuit, noisy_backend: str = None) -> dict[str, int]:
         match noisy_backend:
             case None:
                 backend = cls._get_backend_simulator()

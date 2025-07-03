@@ -34,7 +34,7 @@ class QuantinuumSimulator(Simulator):
 
         return cls.backend_h2
 
-    def simulate_circuit(self, circuit: QuantumCircuit, noisy_backend: str = None):
+    def simulate_circuit(self, circuit: QuantumCircuit, noisy_backend: str = None) -> dict[str, int]:
         pytket_circuit = qiskit_to_tk(circuit)
 
         match noisy_backend:

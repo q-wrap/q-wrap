@@ -1,19 +1,20 @@
 from http import HTTPStatus
 
 from flask import abort, request
+from qiskit import QuantumCircuit
 
 import util
 from api.common import error_handling
 
 
-def get_json():
+def get_json() -> dict:
     if not request.is_json:
         abort(HTTPStatus.UNSUPPORTED_MEDIA_TYPE, "Request must be JSON")
 
     return request.get_json()
 
 
-def get_circuit(data):
+def get_circuit(data) -> QuantumCircuit:
     # required parameter
     if "openqasm_circuit" not in data:
         abort(HTTPStatus.BAD_REQUEST, "Parameter 'openqasm_circuit' missing in request data")

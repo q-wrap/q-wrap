@@ -13,7 +13,7 @@ class IqmSimulator(Simulator):
             cls.backend_apollo = IQMFakeApollo()
         return cls.backend_apollo
 
-    def simulate_circuit(self, circuit: QuantumCircuit, noisy_backend: str = None):
+    def simulate_circuit(self, circuit: QuantumCircuit, noisy_backend: str = None) -> dict[str, int]:
         match noisy_backend:
             case None:
                 raise ValueError("IQM does not support noise-free simulation.")

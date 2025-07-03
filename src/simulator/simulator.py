@@ -1,3 +1,5 @@
+from typing import Self
+
 from qiskit import QuantumCircuit
 
 
@@ -7,7 +9,7 @@ from qiskit import QuantumCircuit
 
 class Simulator:
     @classmethod
-    def get_simulator(cls, vendor: str):
+    def get_simulator(cls, vendor: str) -> Self:
         match vendor:
             case "ibm":
                 from simulator.ibm import IbmSimulator
@@ -28,8 +30,8 @@ class Simulator:
                 raise ValueError(f"Unknown vendor: {vendor}")
 
     @classmethod
-    def get_all_vendor_names(cls):
+    def get_all_vendor_names(cls) -> list[str]:
         return ["ibm", "ionq", "iqm", "quantinuum", "rigetti"]
 
-    def simulate_circuit(self, circuit: QuantumCircuit, noisy_backend: str = None):
+    def simulate_circuit(self, circuit: QuantumCircuit, noisy_backend: str = None) -> dict[str, int]:
         return NotImplementedError
