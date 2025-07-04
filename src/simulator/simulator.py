@@ -10,20 +10,29 @@ from qiskit import QuantumCircuit
 class Simulator:
     @classmethod
     def get_simulator(cls, vendor: str) -> Self:
+        """
+        | vendor       | noise-free                      | noisy                             |
+        |--------------|---------------------------------|-----------------------------------|
+        | ibm          | local                           | local (nonlocal update possible)  |
+        | ionq         | nonlocal                        | nonlocal                          |
+        | iqm          | -                               | local                             |
+        | quantinuum   | - (nonlocal backend-dependent)  | nonlocal                          |
+        | rigetti      | nonlocal (local via VM)         | nonlocal                          |
+        """
         match vendor:
             case "ibm":
                 from simulator.ibm import IbmSimulator
                 return IbmSimulator()
-            case "ionq":
+            case "ionq":  # requires API key
                 from simulator.ionq import IonqSimulator
                 return IonqSimulator()
             case "iqm":
                 from simulator.iqm import IqmSimulator
                 return IqmSimulator()
-            case "quantinuum":
+            case "quantinuum":  # requires API key
                 from simulator.quantinuum import QuantinuumSimulator
                 return QuantinuumSimulator()
-            case "rigetti":
+            case "rigetti":  # requires API key
                 from simulator.rigetti import RigettiSimulator
                 return RigettiSimulator()
             case _:
