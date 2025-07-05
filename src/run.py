@@ -30,4 +30,4 @@ Swagger(app, config=swagger_config, template=swagger_template)
 MqtPredictor.set_model_path(r"..\..\training_env\mqt-predictor\src")
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, use_reloader=False, use_evalex=False)
