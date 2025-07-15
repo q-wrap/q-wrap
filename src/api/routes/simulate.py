@@ -55,6 +55,20 @@ class SimulateView(MethodView):
 
               Warning: Simulation on IonQ Harmony currently takes very long.
               Quantinuuum H2 and Rigetti Aspen-M3 are currently not supported due to missing API keys.
+          - name: compilation
+            in: body
+            type: string
+            required: false
+            enum: [qiskit, mqt, none]
+            description: |
+              Compilation method to be used for the circuit (qiskit, mqt, or none, default is qiskit).
+
+              Compilation with Qiskit is faster than with MQT Predictor, but may be less optimized. Compilation with
+              MQT Predictor is only available for noisy backends.
+
+              If `/select` was called before, the returned compiled circuit should be passed as circuit and this
+              parameter should be set to none. If not, the circuit needs to be compiled before simulation using the
+              specified compilation method.
         responses:
           200:
             description: Successfully simulated quantum circuit
@@ -94,15 +108,20 @@ class SimulateView(MethodView):
             abort(HTTPStatus.BAD_REQUEST,
                   f"Parameter 'vendor' must be one of: {", ".join(Simulator.get_all_vendor_names())}")
 
-        # additional optional parameter
+        # additional optional parameters
         if "noisy_backend" in data:
             noisy_backend = data["noisy_backend"]
         else:
             noisy_backend = None
 
+        if "compilation" in data:
+            compilation = data["compilation"]
+        else:
+            compilation = "qiskit"
+
         try:
             return {
-                "counts": simulator.simulate_circuit(loaded_circuit, noisy_backend),
+                "counts": simulator.simulate_circuit(loaded_circuit, noisy_backend, compilation),
             }, HTTPStatus.OK
         except PermissionError as error:
             error_handling.print_error(error)

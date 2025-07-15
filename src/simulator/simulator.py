@@ -1,6 +1,9 @@
 from typing import Self
 
-from qiskit import QuantumCircuit
+from qiskit import QuantumCircuit, transpile
+from qiskit.providers import Backend
+
+from selector import MqtPredictor
 
 
 # simulator.ibm.IbmSimulator, simulator.ionq.IonqSimulator, simulator.iqm.IqmSimulator,
@@ -40,5 +43,24 @@ class Simulator:
     def get_all_vendor_names(cls) -> list[str]:
         return ["ibm", "ionq", "iqm", "quantinuum", "rigetti"]
 
-    def simulate_circuit(self, circuit: QuantumCircuit, noisy_backend: str = None) -> dict[str, int]:
+    def simulate_circuit(self, circuit: QuantumCircuit, noisy_backend: str | None = None,
+                         compilation: str | None = None) -> dict[str, int]:
         raise NotImplementedError
+
+    @staticmethod
+    def compile_circuit(circuit: QuantumCircuit, backend: Backend, device_name: str,
+                        compilation: str | None = None) -> QuantumCircuit:
+        # Quantinuum circuits are always compiled with qnexus and this method is not used
+
+        match compilation:
+            case None | "none":
+                return circuit
+            case "qiskit":
+                return transpile(circuit, backend)
+            case "mqt":
+                if device_name == "ideal":
+                    raise ValueError("MQT Predictor only supports compilation for noisy backends.")
+
+                return MqtPredictor.compile_for_device(circuit, device_name)
+            case _:
+                raise ValueError(f"Unknown compilation method: {compilation}")

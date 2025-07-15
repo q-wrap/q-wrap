@@ -48,26 +48,27 @@ class IbmSimulator(Simulator):
         cls._get_backend_montreal().refresh(service)
         cls._get_backend_washington().refresh(service)
 
-    def simulate_circuit(self, circuit: QuantumCircuit, noisy_backend: str = None) -> dict[str, int]:
+    def simulate_circuit(self, circuit: QuantumCircuit, noisy_backend: str | None = None,
+                         compilation: str | None = None) -> dict[str, int]:
         match noisy_backend:
             case None:
                 backend = self._get_backend_simulator()
-                transpiled_circuit = transpile(circuit, backend)
+                circuit_to_run = self.compile_circuit(circuit, backend, "ideal", compilation)
             case "montreal":
                 backend = self._get_backend_montreal()
-                transpiled_circuit = transpile(circuit, backend)
+                circuit_to_run = self.compile_circuit(circuit, backend, "ibm_montreal", compilation)
 
-                if transpiled_circuit.num_qubits > 27:
+                if circuit_to_run.num_qubits > 27:
                     raise ValueError("IBM Montreal backend supports only up to 27 qubits.")
             case "washington":
                 backend = self._get_backend_washington()
-                transpiled_circuit = transpile(circuit, backend)
+                circuit_to_run = self.compile_circuit(circuit, backend, "ibm_washington", compilation)
 
-                if transpiled_circuit.num_qubits > 127:
+                if circuit_to_run.num_qubits > 127:
                     raise ValueError("IBM Washington backend supports only up to 127 qubits.")
             case _:
                 raise ValueError(f"Unknown IBM backend: {noisy_backend}")
 
-        job_result = backend.run(transpiled_circuit, shots=1000).result()
+        job_result = backend.run(circuit_to_run, shots=1000).result()
 
         return job_result.get_counts()

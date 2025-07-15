@@ -50,32 +50,32 @@ class IonqSimulator(Simulator):
             cls.backend_harmony.set_options(noise_model="harmony")
         return cls.backend_harmony
 
-    @classmethod
-    def simulate_circuit(cls, circuit: QuantumCircuit, noisy_backend: str = None) -> dict[str, int]:
+    def simulate_circuit(self, circuit: QuantumCircuit, noisy_backend: str | None = None,
+                         compilation: str | None = None) -> dict[str, int]:
         match noisy_backend:
             case None:
-                backend = cls._get_backend_simulator()
-                transpiled_circuit = transpile(circuit, backend)
+                backend = self._get_backend_simulator()
+                circuit_to_run = self.compile_circuit(circuit, backend, "ideal", compilation)
 
-                if transpiled_circuit.num_qubits > 29:
+                if circuit_to_run.num_qubits > 29:
                     raise ValueError("Ideal simulation with IonQ supports only up to 29 qubits.")
             case "aria-1":
-                backend = cls._get_backend_aria()
-                transpiled_circuit = transpile(circuit, backend)
+                backend = self._get_backend_aria()
+                circuit_to_run = self.compile_circuit(circuit, backend, "ionq_aria1", compilation)
 
-                if transpiled_circuit.num_qubits > 25:
+                if circuit_to_run.num_qubits > 25:
                     raise ValueError("IonQ Aria 1 backend supports only up to 25 qubits.")
             case "harmony":
                 print("Warning: Simulation on IonQ Harmony currently takes very long.")
-                backend = cls._get_backend_harmony()
-                transpiled_circuit = transpile(circuit, backend)
+                backend = self._get_backend_harmony()
+                circuit_to_run = self.compile_circuit(circuit, backend, "ionq_harmony", compilation)
 
-                if transpiled_circuit.num_qubits > 11:
+                if circuit_to_run.num_qubits > 11:
                     raise ValueError("IonQ Harmony backend supports only up to 11 qubits.")
             case _:
                 raise ValueError(f"Unknown IonQ backend: {noisy_backend}")
 
-        job_result = backend.run(transpiled_circuit, shots=1000).result()
+        job_result = backend.run(circuit_to_run, shots=1000).result()
         counts = job_result.get_counts()
 
         return {key: int(value) for key, value in counts.items()}  # convert numpy int to int for JSON serialization

@@ -13,19 +13,20 @@ class IqmSimulator(Simulator):
             cls.backend_apollo = IQMFakeApollo()
         return cls.backend_apollo
 
-    def simulate_circuit(self, circuit: QuantumCircuit, noisy_backend: str = None) -> dict[str, int]:
+    def simulate_circuit(self, circuit: QuantumCircuit, noisy_backend: str | None = None,
+                         compilation: str | None = None) -> dict[str, int]:
         match noisy_backend:
             case None:
                 raise ValueError("IQM does not support noise-free simulation.")
             case "apollo":
                 backend = self._get_backend_apollo()
-                transpiled_circuit = transpile(circuit, backend)
+                circuit_to_run = self.compile_circuit(circuit, backend, "iqm_apollo", compilation)
 
-                if transpiled_circuit.num_qubits > 20:
+                if circuit_to_run.num_qubits > 20:
                     raise ValueError("IQM Apollo backend supports only up to 20 qubits.")
             case _:
                 raise ValueError(f"Unknown backend: {noisy_backend}")
 
-        job_result = backend.run(transpiled_circuit, shots=1000).result()
+        job_result = backend.run(circuit_to_run, shots=1000).result()
 
         return job_result.get_counts()

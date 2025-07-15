@@ -34,7 +34,11 @@ class QuantinuumSimulator(Simulator):
 
         return cls.backend_h2
 
-    def simulate_circuit(self, circuit: QuantumCircuit, noisy_backend: str = None) -> dict[str, int]:
+    def simulate_circuit(self, circuit: QuantumCircuit, noisy_backend: str | None = None,
+                         compilation: str | None = None) -> dict[str, int]:
+        if compilation not in (None, "none", "qnexus"):
+            raise ValueError("Quantinuum circuits are always compiled with qnexus.")
+
         pytket_circuit = qiskit_to_tk(circuit)
 
         match noisy_backend:
@@ -56,9 +60,11 @@ class QuantinuumSimulator(Simulator):
         )
         qnexus.jobs.wait_for(compile_job)
         compile_job_result = qnexus.jobs.results(compile_job)[0].get_output()
+        # Quantinuum circuits are always compiled with qnexus
+        circuit_to_run = compile_job_result
 
         execute_job = qnexus.start_execute_job(
-            programs=compile_job_result,
+            programs=circuit_to_run,
             backend_config=backend,
             name="execution",
             n_shots=[100],

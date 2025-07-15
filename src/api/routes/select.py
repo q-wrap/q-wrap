@@ -45,6 +45,9 @@ class SelectView(MethodView):
                 number_of_qubits:
                   type: integer
                   description: Number of qubits in the selected quantum computer
+                compiled_circuit:
+                  type: string
+                  description: OpenQASM circuit compiled for the selected quantum computer
           400:
             description: |
               Bad request: Missing required parameters or invalid parameters, especially invalid OpenQASM circuit
@@ -55,9 +58,10 @@ class SelectView(MethodView):
         data = validation.get_json()
         loaded_circuit = validation.get_circuit(data)
 
-        compiled_circuit, compilation_information, quantum_device = MqtPredictor().select_device(loaded_circuit)
+        compiled_circuit, _, quantum_device = MqtPredictor().select_device(loaded_circuit)
 
         return {
             "quantum_device": quantum_device.name,
             "number_of_qubits": quantum_device.num_qubits,
+            "compiled_circuit": compiled_circuit,
         }, HTTPStatus.OK
