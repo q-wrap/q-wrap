@@ -38,7 +38,10 @@ class SimulateView(MethodView):
             in: body
             type: string
             required: true
-            description: Vendor of the quantum computer to be simulated (ibm, ionq, iqm, quantinuum, rigetti)
+            description: |
+              Vendor of the quantum computer to be simulated (ibm, ionq, iqm). This value must fit the noisy backend.
+
+              Quantinuum and Rigetti are currently not supported due to missing API keys.
           - name: noisy_backend
             in: body
             type: string
@@ -46,11 +49,12 @@ class SimulateView(MethodView):
             enum: [montreal, washington, aria-1, harmony, apollo, h2, aspen-m3]
             description: |
               Name of the quantum computer whose noise model is used for simulation (montreal, washington, aria-1,
-              harmony, apollo, h2, aspen-m3). This value must fit the vendor.
+              harmony, apollo). This value must fit the vendor.
 
               If omitted, noise-free simulation is performed.
 
               Warning: Simulation on IonQ Harmony currently takes very long.
+              Quantinuuum H2 and Rigetti Aspen-M3 are currently not supported due to missing API keys.
         responses:
           200:
             description: Successfully simulated quantum circuit
@@ -82,6 +86,9 @@ class SimulateView(MethodView):
         vendor = data["vendor"]
         try:
             simulator = Simulator.get_simulator(vendor)
+        except NotImplementedError as error:
+            error_handling.print_error(error)
+            abort(HTTPStatus.NOT_IMPLEMENTED, f"Simulation for vendor '{vendor}' currently not supported")
         except ValueError as error:
             error_handling.print_error(error)
             abort(HTTPStatus.BAD_REQUEST,

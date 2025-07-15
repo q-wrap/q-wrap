@@ -29,12 +29,10 @@ class Simulator:
             case "iqm":
                 from simulator.iqm import IqmSimulator
                 return IqmSimulator()
-            case "quantinuum":  # requires API key
-                from simulator.quantinuum import QuantinuumSimulator
-                return QuantinuumSimulator()
-            case "rigetti":  # requires API key
-                from simulator.rigetti import RigettiSimulator
-                return RigettiSimulator()
+            case "quantinuum":  # deactivated due to no API key
+                raise NotImplementedError
+            case "rigetti":  # deactivated due to no API key
+                raise NotImplementedError
             case _:
                 raise ValueError(f"Unknown vendor: {vendor}")
 
@@ -43,4 +41,4 @@ class Simulator:
         return ["ibm", "ionq", "iqm", "quantinuum", "rigetti"]
 
     def simulate_circuit(self, circuit: QuantumCircuit, noisy_backend: str = None) -> dict[str, int]:
-        return NotImplementedError
+        raise NotImplementedError
