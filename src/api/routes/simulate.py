@@ -54,7 +54,7 @@ class SimulateView(MethodView):
               If omitted, noise-free simulation is performed.
 
               Warning: Simulation on IonQ Harmony currently takes very long.
-              Quantinuuum H2 and Rigetti Aspen-M3 are currently not supported due to missing API keys.
+              Quantinuum H2 and Rigetti Aspen-M3 are currently not supported due to missing API keys.
           - name: compilation
             in: body
             type: string

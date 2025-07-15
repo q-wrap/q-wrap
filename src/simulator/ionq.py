@@ -1,6 +1,6 @@
 import json
 
-from qiskit import QuantumCircuit, transpile
+from qiskit import QuantumCircuit
 from qiskit_ionq import IonQProvider
 from qiskit_ionq.ionq_backend import IonQSimulatorBackend
 

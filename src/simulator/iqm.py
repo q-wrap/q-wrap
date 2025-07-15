@@ -1,5 +1,5 @@
 from iqm.qiskit_iqm import IQMFakeApollo
-from qiskit import QuantumCircuit, transpile
+from qiskit import QuantumCircuit
 
 from simulator import Simulator
 
