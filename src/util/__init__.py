@@ -1,2 +1,1 @@
-from .openqasm import load_openqasm_circuit
-from .openqasm import parse_openqasm_version_or_default
+from .openqasm import load_openqasm_circuit, parse_openqasm_version_or_default
