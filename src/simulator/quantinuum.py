@@ -67,7 +67,7 @@ class QuantinuumSimulator(Simulator):
             programs=circuit_to_run,
             backend_config=backend,
             name="execution",
-            n_shots=[100],
+            n_shots=[1000],
         )
         qnexus.jobs.wait_for(execute_job)
         execute_job_result = qnexus.jobs.results(execute_job)[0].download_result()

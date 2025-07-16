@@ -6,8 +6,7 @@ from qiskit.providers import Backend
 from selector import MqtPredictor
 
 
-# simulator.ibm.IbmSimulator, simulator.ionq.IonqSimulator, simulator.iqm.IqmSimulator,
-# simulator.quantinuum.QuantinuumSimulator, simulator.rigetti.RigettiSimulator
+# simulator.ibm.IbmSimulator, simulator.ionq.IonqSimulator, simulator.iqm.IqmSimulator
 # imported in Simulator.get_simulator() to avoid circular imports
 
 class Simulator:
