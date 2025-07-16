@@ -1,6 +1,7 @@
 from http import HTTPStatus
 
 from flask.views import MethodView
+from qiskit import qasm2
 
 from api.common import validation, error_handling
 from selector import MqtPredictor
@@ -63,5 +64,5 @@ class SelectView(MethodView):
         return {
             "quantum_device": quantum_device.name,
             "number_of_qubits": quantum_device.num_qubits,
-            "compiled_circuit": compiled_circuit,
+            "compiled_circuit": qasm2.dumps(compiled_circuit),
         }, HTTPStatus.OK
