@@ -2,21 +2,26 @@
 
 > A wrapper for **Automated Quantum Backend Selection** and **Quantum Circuit Simulation**
 
-This API provides a wrapper for the MQT Predictor as selector and for multiple simulators,
-allowing users to select suitable quantum computers for OpenQASM circuits and to simulate
+This API provides a wrapper for the [MQT Predictor](https://github.com/munich-quantum-toolkit/predictor) as selector
+and for multiple simulators, allowing users to select suitable quantum computers for OpenQASM circuits and to simulate
 them with or without noise models of actual quantum computers.
 
 q-wrap supports the following quantum computers:
 
-| Quantum computer | Number of qubits | `/select` | `/simulate` |
-|------------------|-----------------:|:---------:|:-----------:|
-| IBM Montreal     |               27 |     ✅     |      ✅      |
-| IBM Washington   |              127 |     ✅     |      ✅      |
-| IonQ Aria 1      |               25 |     ✅     |      ✅      |
-| IonQ Harmony     |               11 |     ✅     |  ✅ (slow)   |
-| IQM Apollo       |               20 |     ✅     |      ✅      |
-| Quantinuum H2    |               32 |     ✅     |      ❌      |
-| Rigetti Aspen-M3 |               79 |     ✅     |      ❌      |
+| Quantum computer | Number of qubits | Selection | Simulation |
+|------------------|-----------------:|:---------:|:----------:|
+| IBM Montreal     |               27 |     ✅     |     ✅      |
+| IBM Washington   |              127 |     ✅     |     ✅      |
+| IonQ Aria 1      |               25 |     ✅     |     ✅*     |
+| IonQ Harmony     |               11 |     ✅     |     ❓*     |
+| IQM Apollo       |               20 |     ✅     |     ✅      |
+| Quantinuum H2    |               32 |     ✅     |     ❌*     |
+| Rigetti Aspen-M3 |               79 |     ✅     |     ❌*     |
+
+\* requires an API token, see [API tokens](#api-tokens) below.
+
+Simulation on IonQ Harmony may be unavailable due to server-side failure of the IonQ simulator for this noise model.
+Simulation on Quantinuum H2 and Rigetti Aspen-M3 is not supported because of missing API tokens.
 
 ## Installation
 
@@ -56,21 +61,34 @@ The MQT Predictor needs a trained model which is not included in this repository
 model or get a pre-trained model.
 
 After training or downloading the model, place the `mqt-predictor/src/` directory inside the `data/model/` directory
-of this repository, such that you have `data/model/mqt-predictor/src`. If you prefer another location on your system,
-you can change the `MODEL_PATH` constant in `run.py` to point to a custom location.
+of this repository, such that you have `data/model/mqt-predictor/src/`. If you prefer another location on your system,
+you can change the `MODEL_PATH` constant in `run.py` to point to your custom location.
+
+## API tokens
+
+For simulation on IonQ, an API token is required which should be specified in `data/secrets/tokens.json`:
+
+```json
+{
+  "ionq": "YOUR_IONQ_API_TOKEN"
+}
+```
+
+Quantinuum and Rigetti require API tokens as well, but simulation isn't supported for them, yet, because we couldn't
+obtain API tokens ourselves.
 
 ## Running the API
 
 Make sure that your virtual environment is activated if you created one. To run the API, just execute the `run.py`
-script from the `src` directory with Python 3.12:
+script in the `src` directory with Python 3.12:
 
 ```bash
 python src/run.py
 ```
 
-The API will then be available at `http://localhost:5000`.
+The API will then be available at http://localhost:5000.
 
 ## Documentation
 
 The API is documented using Swagger. You are redirected to the documentation page when you open the API in your browser,
-or you can access it directly at `http://localhost:5000/docs`.
+or you can access it directly at http://localhost:5000/docs.
