@@ -1,11 +1,10 @@
-import json
-
 from qiskit import QuantumCircuit
 from qiskit_aer import AerSimulator
 from qiskit_ibm_runtime import QiskitRuntimeService
 from qiskit_ibm_runtime.fake_provider import FakeMontrealV2, FakeWashingtonV2
 
 from simulator import Simulator
+from util import tokens
 
 
 class IbmSimulator(Simulator):
@@ -33,16 +32,7 @@ class IbmSimulator(Simulator):
 
     @classmethod
     def _refresh_qpu_backends(cls):
-        try:
-            with open("../data/secrets/tokens.json", "r") as file:
-                json_data = json.load(file)
-                if "ibm" in json_data:
-                    token = json_data["ibm"]
-                else:
-                    raise PermissionError("Missing API key for IBM.")
-        except FileNotFoundError:
-            raise PermissionError("Missing file with API keys.")
-
+        token = tokens.get_token("ibm", "Missing API key for IBM.")
         service = QiskitRuntimeService(channel="ibm_cloud", token=token)
 
         cls._get_backend_montreal().refresh(service)

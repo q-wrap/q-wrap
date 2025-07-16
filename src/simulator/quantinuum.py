@@ -1,11 +1,10 @@
-import json
-
 import qnexus
 from pytket.extensions.qiskit import qiskit_to_tk
 from qiskit import QuantumCircuit
 from qnexus import QuantinuumConfig
 
 from simulator import Simulator
+from util import tokens
 
 
 class QuantinuumSimulator(Simulator):
@@ -14,17 +13,8 @@ class QuantinuumSimulator(Simulator):
     @classmethod
     def _get_backend_h2(cls) -> QuantinuumConfig:
         if cls.backend_h2 is None:
-            try:
-                with open("../data/secrets/tokens.json", "r") as file:
-                    json_data = json.load(file)
-                    if "quantinuum_user" in json_data and "quantinuum_password" in json_data:
-                        user = json_data["quantinuum_user"]
-                        password = json_data["quantinuum_password"]
-                    else:
-                        raise PermissionError("Missing username or password for Quantinuum.")
-            except FileNotFoundError:
-                raise PermissionError("Missing file with API keys.")
-
+            user = tokens.get_token("quantinuum_user", "Missing username for Quantinuum.")
+            password = tokens.get_token("quantinuum_password", "Missing password for Quantinuum.")
             qnexus.auth.login_no_interaction(user, password)
 
             project = qnexus.projects.get_or_create(name="Wrapper")

@@ -1,10 +1,9 @@
-import json
-
 from qiskit import QuantumCircuit
 from qiskit_ionq import IonQProvider
 from qiskit_ionq.ionq_backend import IonQSimulatorBackend
 
 from simulator import Simulator
+from util import tokens
 
 
 class IonqSimulator(Simulator):
@@ -16,16 +15,7 @@ class IonqSimulator(Simulator):
     @classmethod
     def _get_provider(cls) -> IonQProvider:
         if cls.provider is None:
-            try:
-                with open("../data/secrets/tokens.json", "r") as file:
-                    json_data = json.load(file)
-                    if "ionq" in json_data:
-                        token = json_data["ionq"]
-                    else:
-                        raise PermissionError("Missing API key for IonQ.")
-            except FileNotFoundError:
-                raise PermissionError("Missing file with API keys.")
-
+            token = tokens.get_token("ionq", "Missing API key for IonQ.")
             cls.provider = IonQProvider(token)
 
         return cls.provider

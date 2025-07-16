@@ -25,7 +25,7 @@ class IqmSimulator(Simulator):
                 if circuit_to_run.num_qubits > 20:
                     raise ValueError("IQM Apollo backend supports only up to 20 qubits.")
             case _:
-                raise ValueError(f"Unknown backend: {noisy_backend}")
+                raise ValueError(f"Unknown IQM backend: {noisy_backend}")
 
         job_result = backend.run(circuit_to_run, shots=1000).result()
 
