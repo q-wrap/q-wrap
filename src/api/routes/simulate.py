@@ -53,7 +53,7 @@ class SimulateView(MethodView):
 
               If omitted, noise-free simulation is performed.
 
-              Warning: Simulation on IonQ Harmony currently takes very long.
+              Warning: Simulation on IonQ Harmony regularly fails after several minutes.
               Quantinuum H2 and Rigetti Aspen-M3 are currently not supported due to missing API keys.
           - name: compilation
             in: body
@@ -89,6 +89,9 @@ class SimulateView(MethodView):
           415:
             description: |
               Unsupported media type: Request is not in JSON format
+          502:
+            description: |
+              Bad gateway: Simulation failed due to an error of the simulator, especially on IonQ Harmony
           
         """
         data = validation.get_json()
@@ -126,3 +129,6 @@ class SimulateView(MethodView):
         except PermissionError as error:
             error_handling.print_error(error)
             abort(HTTPStatus.FORBIDDEN, "API key for this vendor required")
+        except RuntimeError as error:
+            error_handling.print_error(error)
+            abort(HTTPStatus.BAD_GATEWAY, "Simulation failed due to an error of the simulator")

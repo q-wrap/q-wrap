@@ -1,5 +1,6 @@
 from qiskit import QuantumCircuit
 from qiskit_ionq import IonQProvider
+from qiskit_ionq.exceptions import IonQJobFailureError
 from qiskit_ionq.ionq_backend import IonQSimulatorBackend
 
 from simulator import Simulator
@@ -56,7 +57,7 @@ class IonqSimulator(Simulator):
                 if circuit_to_run.num_qubits > 25:
                     raise ValueError("IonQ Aria 1 backend supports only up to 25 qubits.")
             case "harmony":
-                print("Warning: Simulation on IonQ Harmony currently takes very long.")
+                print("Warning: Simulation on IonQ Harmony regularly fails after several minutes.")
                 backend = self._get_backend_harmony()
                 circuit_to_run = self.compile_circuit(circuit, backend, "ionq_harmony", compilation)
 
@@ -65,7 +66,10 @@ class IonqSimulator(Simulator):
             case _:
                 raise ValueError(f"Unknown IonQ backend: {noisy_backend}")
 
-        job_result = backend.run(circuit_to_run, shots=1000).result()
+        try:
+            job_result = backend.run(circuit_to_run, shots=1000).result()
+        except IonQJobFailureError:
+            raise RuntimeError(f"Simulation on IonQ with noisy backend '{noisy_backend}' failed.")
         counts = job_result.get_counts()
 
         return {key: int(value) for key, value in counts.items()}  # convert numpy int to int for JSON serialization
