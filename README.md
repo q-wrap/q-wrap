@@ -58,7 +58,7 @@ instead, which only contains directly installed or imported packages without the
 ## Trained model
 
 The MQT Predictor needs a trained model which is not included in this repository. You can either create your own
-model or get a pre-trained model.
+model using [this separate repository](https://github.com/q-wrap/training) or get a pre-trained model.
 
 After training or downloading the model, place the `mqt-predictor/src/` directory inside the `data/model/` directory
 of this repository, such that you have `data/model/mqt-predictor/src/`. If you prefer another location on your system,
