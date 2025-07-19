@@ -66,7 +66,8 @@ you can change the `MODEL_PATH` constant in `run.py` to point to your custom loc
 
 ## API tokens
 
-For simulation on IonQ, an API token is required which should be specified in `data/secrets/tokens.json`:
+For simulation on IonQ, an API token is required as explained [here](https://docs.ionq.com/guides/managing-api-keys).
+The token should be pasted in `data/secrets/tokens.json` as follows:
 
 ```json
 {
