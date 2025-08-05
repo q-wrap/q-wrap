@@ -1,4 +1,4 @@
-from flask import redirect
+from flask import redirect, Flask
 
 from .select import SelectView
 from .simulate import SimulateView
@@ -12,7 +12,7 @@ def apidocs():
     return redirect("/docs/")
 
 
-def register_routes(app):
+def register_routes(app: Flask):
     app.add_url_rule("/", view_func=index)
     app.add_url_rule("/apidocs/", view_func=apidocs)
 
