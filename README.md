@@ -93,3 +93,10 @@ The API will then be available at http://localhost:5000.
 
 The API is documented using Swagger. You are redirected to the documentation page when you open the API in your browser,
 or you can access it directly at http://localhost:5000/docs.
+
+---
+
+## Use of Generative AI
+
+The development of this project has been aided by generative artificial intelligence tools, namely GitHub Copilot and
+Microsoft Copilot, both based on the model GPT-4.
